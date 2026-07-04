@@ -2,14 +2,9 @@ package com.example.digitalbanking.web;
 
 import com.example.digitalbanking.Exceptions.BalanceNotSufficentException;
 import com.example.digitalbanking.Exceptions.BankAccountNotFoundException;
-import com.example.digitalbanking.Exceptions.CustomerNotFoundException;
-import com.example.digitalbanking.entities.BankAccount;
-import com.example.digitalbanking.entities.CurrentAccount;
-import com.example.digitalbanking.entities.Customer;
-import com.example.digitalbanking.entities.SavingAccount;
+import com.example.digitalbanking.dtos.*;
 import com.example.digitalbanking.services.BankService;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,81 +16,43 @@ public class BankRestController {
 
     private final BankService bankService;
 
-    @PostMapping("/customers")
-    public Customer saveCustomer(@RequestBody Customer customer) {
-        return bankService.saveCustomer(customer);
-    }
-
-    @GetMapping("/customers")
-    public List<Customer> listCustomers() {
-        return bankService.listCustomers();
-    }
-
-    @PostMapping("/accounts/current")
-    public CurrentAccount saveCurrentBankAccount(@RequestBody CurrentAccountRequest request)
-            throws CustomerNotFoundException {
-        return bankService.saveCurrentBankAccount(
-                request.getInitialBalance(),
-                request.getOverDraft(),
-                request.getCustomerId()
-        );
-    }
-
-    @PostMapping("/accounts/saving")
-    public SavingAccount saveSavingBankAccount(@RequestBody SavingAccountRequest request)
-            throws CustomerNotFoundException {
-        return bankService.saveSavingBankAccount(
-                request.getInitialBalance(),
-                request.getInterestRate(),
-                request.getCustomerId()
-        );
-    }
-
     @GetMapping("/accounts/{accountId}")
-    public BankAccount getBankAccount(@PathVariable String accountId)
-            throws BankAccountNotFoundException {
+    public BankAccountDTO getBankAccount(@PathVariable String accountId) throws BankAccountNotFoundException {
         return bankService.getBankAccount(accountId);
     }
 
+    @GetMapping("/accounts")
+    public List<BankAccountDTO> listAccounts(){
+        return bankService.bankAccountList();
+    }
+    @GetMapping("/accounts/{accountId}/operations")
+    public List<AccountOperationDTO> getHistory(@PathVariable String accountId){
+        return bankService.accountHistory(accountId);
+    }
+
+    @GetMapping("/accounts/{accountId}/pageOperations")
+    public AccountHistoryDTO getAccountHistory(
+            @PathVariable String accountId,
+            @RequestParam(name="page",defaultValue = "0") int page,
+            @RequestParam(name="size",defaultValue = "5")int size) throws BankAccountNotFoundException {
+        return bankService.getAccountHistory(accountId,page,size);
+    }
     @PostMapping("/accounts/debit")
-    public void debit(@RequestBody OperationRequest request)
-            throws BalanceNotSufficentException, BankAccountNotFoundException {
-        bankService.debit(
-                request.getAccountId(),
-                request.getAmount(),
-                request.getDescription()
-        );
+    public DebitDTO debit(@RequestBody DebitDTO debitDTO) throws BankAccountNotFoundException, BalanceNotSufficentException {
+        this.bankService.debit(debitDTO.getAccountId(),debitDTO.getAmount(),debitDTO.getDescription());
+        return debitDTO;
     }
-
     @PostMapping("/accounts/credit")
-    public void credit(@RequestBody OperationRequest request)
-            throws BankAccountNotFoundException {
-        bankService.credit(
-                request.getAccountId(),
-                request.getAmount(),
-                request.getDescription()
-        );
+    public CreditDTO credit(@RequestBody CreditDTO creditDTO) throws BankAccountNotFoundException {
+        this.bankService.credit(creditDTO.getAccountId(),creditDTO.getAmount(),creditDTO.getDescription());
+        return creditDTO;
     }
-
-    @Data
-    public static class CurrentAccountRequest {
-        private double initialBalance;
-        private double overDraft;
-        private Long customerId;
-    }
-
-    @Data
-    public static class SavingAccountRequest {
-        private double initialBalance;
-        private double interestRate;
-        private Long customerId;
-    }
-
-    @Data
-    public static class OperationRequest {
-        private String accountId;
-        private double amount;
-        private String description;
+    @PostMapping("/accounts/transfer")
+    public void transfer(@RequestBody TransferRequestDTO transferRequestDTO) throws BankAccountNotFoundException, BalanceNotSufficentException {
+        this.bankService.transfer(
+                transferRequestDTO.getAccountSource(),
+                transferRequestDTO.getAccountDestination(),
+                transferRequestDTO.getAmount());
     }
 
 }

@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-@Entity(name = "customer")
+@Entity
 @Data @NoArgsConstructor @AllArgsConstructor
 public class Customer {
     @Id
