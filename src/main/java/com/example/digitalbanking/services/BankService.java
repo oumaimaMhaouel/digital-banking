@@ -22,7 +22,7 @@ public interface BankService {
     List<BankAccountDTO> bankAccountList();
     List<AccountOperationDTO> accountHistory(String accountId);
     BankAccountDTO getBankAccount(String accountId) throws BankAccountNotFoundException;
-    List<BankAccount> getAccountByCustomer(Long customerId) throws CustomerNotFoundException;
+    List<BankAccountDTO>  getAccountByCustomer(Long customerId) throws CustomerNotFoundException;
     void debit(String accountId,double amount,String description) throws BalanceNotSufficentException, BankAccountNotFoundException;
     void credit(String accountId,double amount,String description) throws BankAccountNotFoundException;
     void transfer(String accountIdSource,String accountIdDestination,double amount) throws BankAccountNotFoundException, BalanceNotSufficentException;

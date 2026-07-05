@@ -1,5 +1,6 @@
 package com.example.digitalbanking.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,5 +17,6 @@ public class Customer {
     private String email;
 
     @OneToMany(mappedBy = "customer")
+    @JsonIgnore
     private List<BankAccount> bankAccounts;
 }

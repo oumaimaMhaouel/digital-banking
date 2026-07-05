@@ -1,6 +1,7 @@
 package com.example.digitalbanking.entities;
 
 import com.example.digitalbanking.enums.OperationType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,5 +21,6 @@ public class AccountOperation {
     private OperationType operationType;
     private double amount;
     @ManyToOne
+    @JsonIgnore
     private BankAccount bankAccount;
 }

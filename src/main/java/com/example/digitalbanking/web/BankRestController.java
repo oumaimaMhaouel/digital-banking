@@ -24,7 +24,7 @@ public class BankRestController {
         return bankService.getBankAccount(accountId);
     }
     @GetMapping("/customer/{id}")
-    public List<BankAccount> getAccountByCustomer(@PathVariable(name = "id") Long customerId) throws CustomerNotFoundException {
+    public List<BankAccountDTO>  getAccountByCustomer(@PathVariable(name = "id") Long customerId) throws CustomerNotFoundException {
         return bankService.getAccountByCustomer(customerId);
     }
 
