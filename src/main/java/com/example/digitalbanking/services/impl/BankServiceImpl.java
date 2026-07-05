@@ -120,6 +120,15 @@ public class BankServiceImpl implements BankService {
     }
 
     @Override
+    public List<BankAccount> getAccountByCustomer(Long customerId) throws CustomerNotFoundException {
+        List<BankAccount> bankAccounts = bankAccountRepository.findByCustomerId(customerId);
+        if(bankAccounts.isEmpty()) {
+            throw new CustomerNotFoundException("Customer not found");
+        }
+        return bankAccounts;
+    }
+
+    @Override
     public List<BankAccountDTO> bankAccountList() {
         List<BankAccount> bankAccounts = bankAccountRepository.findAll();
         List<BankAccountDTO> bankAccountDTOS = bankAccounts.stream().map(bankAccount -> {
